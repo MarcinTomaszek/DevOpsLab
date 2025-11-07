@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./web
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - demo-net
+
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    networks:
+      - demo-net
+
+networks:
+  demo-net:
+    driver: bridge
