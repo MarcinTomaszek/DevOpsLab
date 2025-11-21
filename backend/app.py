@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/api/rates")
 def get_rates():
-    # API Frankfurter – base USD, target currencies
+    # Frankfurter API
     url = "https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,CHF,PLN"
     try:
         response = requests.get(url, timeout=5).json()
