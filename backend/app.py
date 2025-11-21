@@ -5,28 +5,21 @@ app = Flask(__name__)
 
 @app.route("/api/rates")
 def get_rates():
-    url = "https://api.exchangerate.host/latest?base=USD&symbols=EUR,GBP,CHF,PLN"
-    response = requests.get(url).json()
+    # API Frankfurter – base USD, target currencies
+    url = "https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,CHF,PLN"
+    try:
+        response = requests.get(url, timeout=5).json()
+    except Exception as e:
+        return jsonify({"error": "Błąd połączenia z API", "details": str(e)}), 500
 
-    # Logowanie odpowiedzi API
-    print("API RESPONSE:", response)
-
-    # API zwróciło error?
-    if not response.get("success", True):
-        return jsonify({
-            "error": response.get("error", "Unexpected API error"),
-            "raw_response": response
-        }), 500
-
-    # Bezpiecznie pobieramy wartości
-    base = response.get("base", "USD")
-    rates = response.get("rates", {})
-    date = response.get("date", "")
+    rates = response.get("rates")
+    if not rates:
+        return jsonify({"error": "Brak danych rates", "raw_response": response}), 500
 
     return jsonify({
-        "base": base,
+        "base": response.get("base", "USD"),
         "rates": rates,
-        "date": date
+        "date": response.get("date", "")
     })
 
 if __name__ == "__main__":
