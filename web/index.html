@@ -96,7 +96,7 @@ async function loadRates() {
 
     try {
         // fetch backend, w Docker Compose 'backend' to nazwa usługi
-        const res = await fetch("http://backend:5000/api/rates");
+        const res = await fetch("api/rates");
         if (!res.ok) throw new Error(`Błąd serwera: ${res.status}`);
         const data = await res.json();
 
