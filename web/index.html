@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Kursy walut</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        table { border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; }
+    </style>
+</head>
+<body>
+
+<h2>Aktualne kursy walut (USD →)</h2>
+
+<button onclick="loadRates()">Odśwież</button>
+
+<table id="ratesTable">
+    <thead>
+        <tr><th>Waluta</th><th>Kurs</th></tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+function loadRates() {
+    fetch("http://backend:5000/api/rates")
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector("#ratesTable tbody");
+            tbody.innerHTML = "";
+            for (let currency in data.rates) {
+                tbody.innerHTML += `<tr>
+                    <td>${currency}</td>
+                    <td>${data.rates[currency]}</td>
+                </tr>`;
+            }
+        })
+        .catch(err => console.error("Błąd:", err));
+}
+
+loadRates();
+</script>
+
+</body>
+</html>
