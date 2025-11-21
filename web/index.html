@@ -4,41 +4,121 @@
     <meta charset="UTF-8">
     <title>Kursy walut</title>
     <style>
-        body { font-family: Arial; margin: 40px; }
-        table { border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
 
-<h2>Aktualne kursy walut (USD →)</h2>
+<div class="container">
+    <h2>Aktualne kursy walut (USD →)</h2>
 
-<button onclick="loadRates()">Odśwież</button>
+    <button onclick="loadRates()">Odśwież</button>
 
-<table id="ratesTable">
-    <thead>
-        <tr><th>Waluta</th><th>Kurs</th></tr>
-    </thead>
-    <tbody></tbody>
-</table>
+    <table id="ratesTable">
+        <thead>
+            <tr><th>Waluta</th><th>Kurs</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div id="errorMessage" class="error"></div>
+</div>
 
 <script>
-function loadRates() {
-    fetch("http://backend:5000/api/rates")
-        .then(res => res.json())
-        .then(data => {
-            const tbody = document.querySelector("#ratesTable tbody");
-            tbody.innerHTML = "";
-            for (let currency in data.rates) {
-                tbody.innerHTML += `<tr>
-                    <td>${currency}</td>
-                    <td>${data.rates[currency]}</td>
-                </tr>`;
-            }
-        })
-        .catch(err => console.error("Błąd:", err));
+async function loadRates() {
+    const tbody = document.querySelector("#ratesTable tbody");
+    const errorDiv = document.querySelector("#errorMessage");
+    tbody.innerHTML = "";
+    errorDiv.textContent = "";
+
+    try {
+        // fetch backend, w Docker Compose 'backend' to nazwa usługi
+        const res = await fetch("http://backend:5000/api/rates");
+        if (!res.ok) throw new Error(`Błąd serwera: ${res.status}`);
+        const data = await res.json();
+
+        if (data.error) {
+            errorDiv.textContent = "Błąd API: " + data.error;
+            return;
+        }
+
+        for (let currency in data.rates) {
+            const row = `<tr>
+                            <td>${currency}</td>
+                            <td>${data.rates[currency]}</td>
+                        </tr>`;
+            tbody.innerHTML += row;
+        }
+    } catch (err) {
+        console.error(err);
+        errorDiv.textContent = "Nie udało się pobrać kursów.";
+    }
 }
 
+// ładowanie od razu po wejściu na stronę
 loadRates();
 </script>
 
