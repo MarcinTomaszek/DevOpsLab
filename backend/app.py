@@ -8,7 +8,7 @@ def get_rates():
     url = "https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,CHF,PLN"
     try:
         response = requests.get(url, timeout=10)
-        data = response.json()  # <-- upewnij się, że JSON jest poprawnie parsowany
+        data = response.json() 
 
         return jsonify({
             "base": data.get("base"),
