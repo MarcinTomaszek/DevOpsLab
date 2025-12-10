@@ -16,10 +16,10 @@ spec:
     spec:
       containers:
       - name: web
-        image: web-image:latest
-        imagePullPolicy: Never
+        image: web-image:latest 
+        imagePullPolicy: Never 
         ports:
-        - containerPort: 80 
+        - containerPort: 80
         resources:
           limits:
             memory: "64Mi"
